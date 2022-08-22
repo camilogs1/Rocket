@@ -1,56 +1,62 @@
-from concurrent.futures import thread
-import socket
-import threading
+"""Server for multithreaded (asynchronous) chat application."""
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
 
-host ="127.0.0.1"
-port = 55555
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-server.bind((host, port))
-server.listen()
-print(f"Server running on {host}:{port}")
-
-clients = []
-usernames = []
-
-def broadcast(message, _client):
-    for client in clients:
-        if client != _client:
-            client.send(message)
-
-def handle_messages(client):
+def accept_incoming_connections():
+    """Sets up handling for incoming clients."""
     while True:
-        try:
-            message = client.recv(1024)
-            broadcast(message,client)
-        except:
-            index = clients.index(client)
-            username = usernames[index]
-            broadcast(f"Chatbot: {username} disconnected".encode('utf-8'))
-            clients.remove(client)
-            usernames.remove(username)
+        client, client_address = SERVER.accept()
+        print("%s:%s has connected." % client_address)
+        client.send(bytes("Greetings from the cave! Now type your name and press enter!", "utf8"))
+        addresses[client] = client_address
+        Thread(target=handle_client, args=(client,)).start()
+
+
+def handle_client(client):  # Takes client socket as argument.
+    """Handles a single client connection."""
+
+    name = client.recv(BUFSIZ).decode("utf8")
+    welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % name
+    client.send(bytes(welcome, "utf8"))
+    msg = "%s has joined the chat!" % name
+    broadcast(bytes(msg, "utf8"))
+    clients[client] = name
+
+    while True:
+        msg = client.recv(BUFSIZ)
+        if msg != bytes("{quit}", "utf8"):
+            broadcast(msg, name+": ")
+        else:
+            client.send(bytes("{quit}", "utf8"))
             client.close()
+            del clients[client]
+            broadcast(bytes("%s has left the chat." % name, "utf8"))
             break
 
-def receive_connections():
-    while True:
-        client, address = server.accept()
 
-        client.send("@username".encode("utf-8"))
-        username = client.recv(1024).decode('utf-8')
+def broadcast(msg, prefix=""):  # prefix is for name identification.
+    """Broadcasts a message to all the clients."""
 
-        clients.append(client)
-        usernames.append(username)
+    for sock in clients:
+        sock.send(bytes(prefix, "utf8")+msg)
 
-        print(f"{username} is connected with {str(address)}")
+        
+clients = {}
+addresses = {}
 
-        message = f"Chatbot: {username} joined the chat!".encode("utf-8")
-        broadcast(message,client)
-        client.send("Connected to server".encode("utf-8"))
-        print(usernames)
+HOST = '127.0.0.1'
+PORT = 55555
+BUFSIZ = 1024
+ADDR = (HOST, PORT)
 
-        thread = threading.Thread(target=handle_messages, args=(client,))
-        thread.start()
+SERVER = socket(AF_INET, SOCK_STREAM)
+SERVER.bind(ADDR)
 
-receive_connections()
+if __name__ == "__main__":
+    SERVER.listen(5)
+    print("Waiting for connection...")
+    ACCEPT_THREAD = Thread(target=accept_incoming_connections)
+    ACCEPT_THREAD.start()
+    ACCEPT_THREAD.join()
+    SERVER.close()
