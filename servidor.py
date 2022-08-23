@@ -1,5 +1,4 @@
 from socket import AF_INET, SO_REUSEADDR, socket, SOCK_STREAM
-from ssl import SOL_SOCKET
 from threading import Thread
 
 
@@ -48,14 +47,14 @@ def broadcast(msg, prefix=""):  # prefix es para identificar el nombre.
 clients = {}
 addresses = {}
 
-HOST = 'localhost'
+HOST = '172.20.10.10' # IP del servidor
 PORT = 55555
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
 
 SERVER = socket(AF_INET, SOCK_STREAM)
-SERVER.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 SERVER.bind(ADDR)
+SERVER.listen(100)
 
 if __name__ == "__main__":
     SERVER.listen(5)
