@@ -3,7 +3,7 @@ from threading import Thread
 from tkinter import *
 import tkinter
 import tkinter.font as tkFont
-from tkinter import messagebox
+#from tkinter import messagebox
 
 def receive():
     #Maneja la recepción de mensajes.
@@ -11,6 +11,10 @@ def receive():
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
+            #a
+            user = client_socket.recv(BUFSIZ).decode("utf8")
+            msg_list.insert(tkinter.END, user)
+            #fin
         except OSError:  # Posiblemente el cliente ha abandonado el chat.
             break
 
@@ -28,7 +32,9 @@ def on_closing(event=None):
     my_msg.set("quit")
     send()
 
+
 #Usuarios Conectados
+'''
 def about():
     ventana_about = Toplevel()
     ventana_about.iconbitmap('data/origami.ico')
@@ -37,11 +43,20 @@ def about():
     ventana_about.geometry("250x250+30+50")
     ventana_about.resizable(1,1)
 
+    user_frame = tkinter.Frame(ventana_about)
+    scrollbar = tkinter.Scrollbar(user_frame) 
+    user_list = tkinter.Listbox(user_frame, height=20, width=80, yscrollcommand=scrollbar.set)
+    scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+    user_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
+
+    user = client_socket.recv(BUFSIZ).decode("utf8")
+    user_list.insert(tkinter.END, user)
+
     c = """Usuarios conectados:"""
     e1_descripcion = Label(ventana_about, text = c, width = 30, font = ("Helvetica 12"), bg = "white", justify = tkinter.LEFT, fg = "black")
-    e1_descripcion.place(x = 0, y = 0)
+    e1_descripcion.pack()
 #fin
-
+'''
 #Creación pestaña
 top = tkinter.Tk()
 top.iconbitmap('data/zorro.ico')
@@ -72,7 +87,7 @@ send_button = tkinter.Button(top, text="Enviar", width = "10", height = "1", fon
 send_button.pack()
 
 conectados = Button(top, text="👤", width = "2", height = "0", font = ("Helvetica 12"), foreground="black", 
-bg='#dd5228', activebackground='white', command = about)
+bg='#dd5228', activebackground='white', command = "about")
 conectados.pack()
 conectados.place(x=0, y=0)
 

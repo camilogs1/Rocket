@@ -19,6 +19,9 @@ def handle_client(client):  # Toma el socket del cliente como argumento.
     welcome = '¡Bienvenido %s! Si alguna vez quieres salir, escribe quit para salir.' % name
     client.send(bytes(welcome, "utf8"))
     msg = "%s ¡Se ha unido al chat!" % name
+    print(name)
+    user = '¡El usuario %s! Está en linea.' % name
+    client.send(bytes(user, "utf8"))
     broadcast(bytes(msg, "utf8"))
     clients[client] = name
 
