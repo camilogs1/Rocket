@@ -94,7 +94,7 @@ conectados.place(x=0, y=0)
 top.protocol("WM_DELETE_WINDOW", on_closing)
 
 #----Ahora viene la parte del socket----
-HOST = '127.0.0.1'
+HOST = 'localhost'
 PORT = 55555
 
 if not PORT:
