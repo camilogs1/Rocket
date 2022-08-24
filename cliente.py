@@ -71,10 +71,11 @@ my_msg = tkinter.StringVar()  # Para los mensajes que se envían.
 
 my_msg.set("")
 
-scrollbar = tkinter.Scrollbar(messages_frame)  # Para navegar por los mensajes anteriores.
+scrollbar = tkinter.Scrollbar(messages_frame, orient=VERTICAL)  # Para navegar por los mensajes anteriores.
 # A continuación, los mensajes.
-msg_list = tkinter.Listbox(messages_frame, height=20, width=80, yscrollcommand=scrollbar.set)
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+msg_list = tkinter.Listbox(messages_frame, height=20, width=80, yscrollcommand=scrollbar.set)
+scrollbar.config(command=msg_list.yview)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
@@ -83,7 +84,7 @@ entry_field = tkinter.Entry(top, textvariable=my_msg, width= 45, highlightbackgr
 entry_field.bind("<Return>", send)
 entry_field.pack()
 send_button = tkinter.Button(top, text="Enviar", width = "10", height = "1", font = ("Helvetica 12 bold"), command=send,
- foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228')
+foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228')
 send_button.pack()
 
 conectados = Button(top, text="👤", width = "2", height = "0", font = ("Helvetica 12"), foreground="black", 
