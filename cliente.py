@@ -19,6 +19,8 @@ def receive():
                 pass
             if "Está en linea." in msg:
                 conectlist.insert(tkinter.END, msg)
+            elif "ha dejado el chat" in msg:
+                conectlist.insert(tkinter.END, msg)
             else:
                 msg_list.insert(tkinter.END, msg)
         except OSError:  # Posiblemente el cliente ha abandonado el chat.
@@ -37,33 +39,6 @@ def on_closing(event=None):
     #Esta función debe ser llamada cuando se cierra la ventana
     my_msg.set("quit")
     send()
-
-
-#Usuarios Conectados
-'''
-def about():
-    ventana_about = Toplevel()
-    ventana_about.iconbitmap('data/origami.ico')
-    ventana_about.config(bg = "white")
-    ventana_about.title("Conectados")
-    ventana_about.geometry("250x250+30+50")
-    ventana_about.resizable(1,1)
-
-    user_frame = tkinter.Frame(ventana_about)
-    scrollbar = tkinter.Scrollbar(user_frame) 
-    user_list = tkinter.Listbox(user_frame, height=20, width=80, yscrollcommand=scrollbar.set)
-    scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-    user_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
-
-    user = client_socket.recv(BUFSIZ).decode("utf8")
-    user_list.insert(tkinter.END, user)
-
-    c = """Usuarios conectados:"""
-    e1_descripcion = Label(ventana_about, text = c, width = 30, font = ("Helvetica 12"), bg = "white", justify = tkinter.LEFT, fg = "black")
-'''
-
-
-#fin
 
 #Creación pestaña
 top = tkinter.Tk()
