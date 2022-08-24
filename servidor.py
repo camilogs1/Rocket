@@ -1,6 +1,6 @@
 from socket import AF_INET, SO_REUSEADDR, socket, SOCK_STREAM
 from threading import Thread
-
+import json
 
 def accept_incoming_connections():
     """Establece el manejo de los clientes entrantes"""
@@ -24,7 +24,7 @@ def handle_client(client):  # Toma el socket del cliente como argumento.
     client.send(bytes(user, "utf8"))
     broadcast(bytes(msg, "utf8"))
     clients[client] = name
-
+    print(clients[client])
     while True:
         msg = client.recv(BUFSIZ)
         if msg != bytes("quit", "utf8"):
@@ -32,16 +32,24 @@ def handle_client(client):  # Toma el socket del cliente como argumento.
         else:
             client.send(bytes("quit", "utf8"))
             client.close()
+            ms = "%s ha dejado el chat." % name
             del clients[client]
-            broadcast(bytes("%s ha dejado el chat." % name, "utf8"))
+            broadcast(ms)
             break
 
 
 def broadcast(msg, prefix=""):  # prefix es para identificar el nombre.
     """Emite un mensaje a todos los clientes"""
-
-    for sock in clients:
-        sock.send(bytes(prefix, "utf8")+msg)
+    if type(msg) == list:
+        new = json.dumps(msg)
+        print(new)
+        
+        for sock in clients:
+            sock.send(bytes(prefix, "utf8")+new)
+    else:
+       for sock in clients:
+            sock.send(bytes(prefix, "utf8")+msg)     
+   
 
         
 clients = {}
