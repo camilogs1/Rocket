@@ -11,18 +11,13 @@ def receive():
     while True:
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
-
-            msg_list.insert(tkinter.END, msg)
-            #a
-            user = client_socket.recv(BUFSIZ).decode("utf8")
-            msg_list.insert(tkinter.END, user)
             #fin
             try:
                 new = json.loads(msg)
                 conectlist.insert(tkinter.END,new)
             except:
-                print('No es lista')
-            if "¡Se ha unido al chat!" in msg:
+                pass
+            if "Está en linea." in msg:
                 conectlist.insert(tkinter.END, msg)
             else:
                 msg_list.insert(tkinter.END, msg)
