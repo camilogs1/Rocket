@@ -17,7 +17,7 @@ def handle_client(client):  # Toma el socket del cliente como argumento.
     client.send(bytes(welcome, "utf8"))
     msg = "%s ¡Se ha unido al chat!" % name
     print(name)
-    user = '¡El usuario %s! Está en linea.' % name
+    user = '%s está en linea.' % name
     broadcast(bytes(user, "utf8"))
     broadcast(bytes(msg, "utf8"))
     clients[client] = name
@@ -27,11 +27,12 @@ def handle_client(client):  # Toma el socket del cliente como argumento.
         if msg != bytes("quit", "utf8"):
             broadcast(msg, name+": ")
         else:
-            client.send(bytes("quit", "utf8"))
+            #client.send(bytes("quit", "utf8"))
             client.close()
             del clients[client]
             broadcast(bytes("%s ha dejado el chat." % name, "utf8"))
             break
+        
 def broadcast(msg, prefix=""):  # prefix es para identificar el nombre.
     """Emite un mensaje a todos los clientes"""
     for sock in clients:
@@ -39,7 +40,9 @@ def broadcast(msg, prefix=""):  # prefix es para identificar el nombre.
         
 clients = {}
 addresses = {}
-HOST = '172.20.10.10'
+HOST = 'localhost'
+
+#HOST = '172.20.10.10'
 PORT = 55555
 BUFSIZ = 1024
 ADDR = (HOST, PORT)

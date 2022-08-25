@@ -11,18 +11,32 @@ def receive():
     while True:
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
+            #print(msg)
             #fin
             try:
                 new = json.loads(msg)
                 conectlist.insert(tkinter.END,new)
             except:
                 pass
-            if "Está en linea." in msg:
+            if "está en linea." in msg:
+                #lista.append(msg)
                 conectlist.insert(tkinter.END, msg)
+                conectlist.itemconfigure(tkinter.END, bg="#00aa00", fg="#fff")
+                # items = conectlist.get()
+                # print(items, type(items))
             elif "ha dejado el chat" in msg:
+                #lista.append(msg)
                 conectlist.insert(tkinter.END, msg)
+                conectlist.itemconfigure(tkinter.END, bg="#ff0000", fg="#fff")
+                #items = conectlist.get(0,last=len(lista))
+                #print(items, type(items))
+                # items = conectlist.get()
+                # print(items, type(items))
             else:
                 msg_list.insert(tkinter.END, msg)
+                msg_list.see(tkinter.END)
+                #items = conectlist.get(0,last=len(lista))
+                #print(items, type(items))
         except OSError:  # Posiblemente el cliente ha abandonado el chat.
             break
 
@@ -55,15 +69,20 @@ my_msg = tkinter.StringVar()  # Para los mensajes que se envían.
 my_msg.set("")
 
 scrollbar = tkinter.Scrollbar(messages_frame, orient=VERTICAL)  # Para navegar por los mensajes anteriores.
-label2= tkinter.Label(top, text="Usuarios Conectados", bg="white", fg="#dd5228")
+label2= tkinter.Label(top, text="Usuarios", bg="white", fg="#dd5228")
 label2.configure(font=("Bahnschrift Light bold", 10, tkFont.BOLD))
 label2.pack(side=tkinter.LEFT)
 label2.place(x=5,y=50)
 
 conectlist = tkinter.Listbox(conectadosframe, height=18, width=24)
 conectlist.pack(side=tkinter.RIGHT)
-conectlist.pack()
+#lista = ["."]
+#conectlist.insert(0, *lista)
+conectlist.pack(fill= "y")
+#items = conectlist.get(0,last=len(lista))
+#print(items, type(items))
 #conectlist.insert()
+
 conectadosframe.pack(side=tkinter.LEFT)
 
 scrollbar = tkinter.Scrollbar(messages_frame)  # Para navegar por los mensajes anteriores.
@@ -73,10 +92,11 @@ scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
 msg_list = tkinter.Listbox(messages_frame, height=20, width=80, yscrollcommand=scrollbar.set)
 scrollbar.config(command=msg_list.yview)
-msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
-msg_list.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
-msg_list.pack()
-messages_frame.pack()
+msg_list.pack(expand=1)
+msg_list.pack(fill=tkinter.BOTH)
+messages_frame.pack(expand=1)
+messages_frame.pack(fill='both')
+
 
 entry_field = tkinter.Entry(top, textvariable=my_msg, width= 45, highlightbackground='black', highlightthickness=3)
 entry_field.bind("<Return>", send)
@@ -92,7 +112,8 @@ top.protocol("WM_DELETE_WINDOW", on_closing)
 
 #----Ahora viene la parte del socket----
 #HOST = '172.20.10.10'
-HOST = '172.20.10.10' # IP del servidor
+HOST = 'localhost'
+
  # IP del servidor
 PORT = 55555
 
