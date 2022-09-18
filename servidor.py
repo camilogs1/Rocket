@@ -1,56 +1,57 @@
-from concurrent.futures import thread
-import socket
-import threading
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
 
-host ="127.0.0.1"
-port = 55555
-
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-server.bind((host, port))
-server.listen()
-print(f"Server running on {host}:{port}")
-
-clients = []
-usernames = []
-
-def broadcast(message, _client):
-    for client in clients:
-        if client != _client:
-            client.send(message)
-
-def handle_messages(client):
+def accept_incoming_connections():
+    """Establece el manejo de los clientes entrantes"""
     while True:
-        try:
-            message = client.recv(1024)
-            broadcast(message,client)
-        except:
-            index = clients.index(client)
-            username = usernames[index]
-            broadcast(f"Chatbot: {username} disconnected".encode('utf-8'))
-            clients.remove(client)
-            usernames.remove(username)
+        client, client_address = SERVER.accept()
+        print("%s:%s se ha conectado." % client_address)
+        client.send(bytes("¡Bienvenidos a Rocket! ¡Ahora escribe tu nombre y pulsa enter!", "utf8"))
+        addresses[client] = client_address
+        Thread(target=handle_client, args=(client,)).start()
+
+def handle_client(client):  # Toma el socket del cliente como argumento.
+    """Maneja una sola conexión de cliente."""
+    name = client.recv(BUFSIZ).decode("utf8")
+    welcome = '¡Bienvenido %s! Si alguna vez quieres salir, escribe quit para salir.' % name
+    client.send(bytes(welcome, "utf8"))
+    msg = "%s ¡Se ha unido al chat!" % name
+    print(name)
+    user = '%s está en linea.' % name
+    broadcast(bytes(user, "utf8"))
+    broadcast(bytes(msg, "utf8"))
+    clients[client] = name
+
+    while True:
+        msg = client.recv(BUFSIZ)
+        if msg != bytes("quit", "utf8"):
+            broadcast(msg, name+": ")
+        else:
+            #client.send(bytes("quit", "utf8"))
             client.close()
+            del clients[client]
+            broadcast(bytes("%s ha dejado el chat." % name, "utf8"))
             break
+        
+def broadcast(msg, prefix=""):  # prefix es para identificar el nombre.
+    """Emite un mensaje a todos los clientes"""
+    for sock in clients:
+        sock.send(bytes(prefix, "utf8")+msg)
+        
+clients = {}
+addresses = {}
+HOST = 'localhost'
 
-def receive_connections():
-    while True:
-        client, address = server.accept()
-
-        client.send("@username".encode("utf-8"))
-        username = client.recv(1024).decode('utf-8')
-
-        clients.append(client)
-        usernames.append(username)
-
-        print(f"{username} is connected with {str(address)}")
-
-        message = f"Chatbot: {username} joined the chat!".encode("utf-8")
-        broadcast(message,client)
-        client.send("Connected to server".encode("utf-8"))
-        print(usernames)
-
-        thread = threading.Thread(target=handle_messages, args=(client,))
-        thread.start()
-
-receive_connections()
+#HOST = '172.20.10.10'
+PORT = 55555
+BUFSIZ = 1024
+ADDR = (HOST, PORT)
+SERVER = socket(AF_INET, SOCK_STREAM)
+SERVER.bind(ADDR)
+if __name__ == "__main__":
+    SERVER.listen(5)
+    print("Esperando la conexión...")
+    ACCEPT_THREAD = Thread(target=accept_incoming_connections)
+    ACCEPT_THREAD.start()
+    ACCEPT_THREAD.join()
+    SERVER.close()
