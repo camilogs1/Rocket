@@ -2,6 +2,7 @@ from tkinter import *
 import os
 import tkinter
 import tkinter.font as tkFont
+from data import *
 pestas_color='#dd5228'
 
 def ventana_inicio():
@@ -15,8 +16,8 @@ def ventana_inicio():
     Button(text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=login,
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (text="").pack()
-    Button(text="Registrarse", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=registro,
-    foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    #Button(text="Registrarse", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=registro,
+    #foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (text="").pack()
     ventana_principal.mainloop()
 
@@ -69,45 +70,33 @@ def login ():
     ventana_login.geometry ("400x250")
     ventana_login.iconbitmap('data/zorro.ico')
 
-    Label (ventana_login, text="Introduzca nombre de usuario y contraseña", bg="white", fg="#dd5228",
+    Label (ventana_login, text="Acerque su carnet por el lector", bg="white", fg="#dd5228",
     font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
     Label (ventana_login, text="") .pack()
 
     global verifica_usuario
-    global verifica_clave
 
     verifica_usuario = StringVar()
-    verifica_clave = StringVar ()
 
     global entrada_login_usuario
-    global entrada_login_clave
 
-    Label (ventana_login, text="Nombre usuario * ").pack()
+    Label (ventana_login, text="Carnet* ").pack()
     entrada_login_usuario = Entry(ventana_login, textvariable = verifica_usuario)
     entrada_login_usuario.pack()
-    Label(ventana_login, text="Contraseña * ").pack()
-    entrada_login_clave = Entry(ventana_login, textvariable=verifica_clave, show= '*')
-    entrada_login_clave.pack()
     Label(ventana_login, text="").pack()
     Button(ventana_login, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
 
 def verifica_login():
-    usuariol = verifica_usuario.get ()
-    clavel = verifica_clave.get()
-    entrada_login_usuario.delete(0, END)
-    entrada_login_clave.delete(0, END)
-
-    lista_archivos = os.listdir()
-    if usuariol in lista_archivos:
-        archivol = open(usuariol, "r")
-        verifica = archivol.read().splitlines ()
-        if clavel in verifica:
-            exito_login()
-        else:
-            no_clave()
-    else:
-        no_usuario()
+    Dataset = leer_datos()
+    print(entrada_login_usuario, type(entrada_login_usuario))
+    for idx, depar in zip(Dataset["RFid"],Dataset["Departamento"]):
+        if int(str(idx)) == int(verifica_usuario):
+            if str(depar) == "Gerente":
+                #REdirige a ventana mood administrador
+                pass
+            else:
+                exito_login()
 
 def no_usuario ():
     global ventana_no_usuario
