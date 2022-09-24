@@ -3,6 +3,7 @@ import os
 import tkinter
 import tkinter.font as tkFont
 from data import *
+import time
 pestas_color='#dd5228'
 
 # Ventana de inicio
@@ -62,7 +63,7 @@ def login ():
     Label(ventana_login, image=rfid).pack()
 
 # Ventana Gerente
-def ventana_gerente():
+def ventana_gerente(carnet):
     ventana_login.destroy()
     global ventana_gerente
     ventana_gerente = Toplevel()
@@ -73,9 +74,9 @@ def ventana_gerente():
     Label (ventana_gerente, text="Bienvenido Gerente", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
     Label (ventana_gerente, text="").pack()
     Button(ventana_gerente, text="Acceder al chat", width = "15", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
-    command=exito_login, foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    command=lambda:exito_login(carnet), foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (ventana_gerente, text="").pack()
-    Button(ventana_gerente, text="Registrar", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=registro,
+    Button(ventana_gerente, text="Registrar", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=nuevo_registro,
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (ventana_gerente, text="").pack()
     #Imagen
@@ -85,17 +86,18 @@ def ventana_gerente():
 # Función verificar identidad Login
 def verifica_login():
     Dataset = leer_datos()
-    carnet = verifica_usuario.get ()
+    global carnet
+    carnet = verifica_usuario.get()
     entrada_login_usuario.delete(0, END)
     #El auxiliar es para que no de el mensaje de error si entra a gerente
     aux=1
     for idx, depar in zip(Dataset["RFid"],Dataset["Departamento"]):
         if int(str(idx)) == int(carnet):
             if str(depar) == "Gerente":
-                ventana_gerente()
+                ventana_gerente(carnet)
                 aux=0
             else:
-                exito_login()
+                exito_login(carnet)
                 aux=0
     if aux == 1:
         no_usuario()
@@ -116,9 +118,14 @@ def no_usuario ():
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
 
 # Función por si el usuario accedio correctamente
-def exito_login():
+def exito_login(carnet):
     ventana_principal.destroy()
     #Abrir Rocket
+    fecha = time.strftime("%d/%m/%y")
+    print(fecha)
+    hora_llegada = time.strftime("%H:%M:%S")
+    print(hora_llegada)
+    guardar_fecha(fecha, hora_llegada, carnet)
     os.system('python cliente.py')
 
 def borrar_no_usuario():
