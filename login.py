@@ -5,22 +5,26 @@ import tkinter.font as tkFont
 from data import *
 pestas_color='#dd5228'
 
+# Ventana de inicio
 def ventana_inicio():
     global ventana_principal
     ventana_principal=Tk()
     ventana_principal.geometry("300x250")#Dimension
     ventana_principal.title("Rocket")#Titulo
     ventana_principal.iconbitmap('data/zorro.ico')
-    Label (text="Escoja su opción", bg="white", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
+
+    Label (text="Bienvenido a Rocket", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
     Label (text="").pack()
     Button(text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=login,
-    foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    foreground = "white", activeforeground = '#dd5228').pack()
     Label (text="").pack()
-    #Button(text="Registrarse", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=registro,
-    #foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
-    Label (text="").pack()
+    #Imagen
+    rocket = PhotoImage(file='data/zorro.png').subsample(4,4)
+    Label(ventana_principal, image=rocket).pack()
+
     ventana_principal.mainloop()
 
+# Ventana de registro
 def registro():
     global ventana_registro
     ventana_registro = Toplevel(ventana_principal)
@@ -28,118 +32,97 @@ def registro():
     ventana_registro.geometry ("300x250")
     ventana_registro.iconbitmap('data/zorro.ico')
 
-    global nombre_usuario
-    global clave
-    global entrada_nombre
-    global entrada_clave
-    nombre_usuario = StringVar ()
-    clave = StringVar ()
+    #Acceso al Google Sheet
 
-    Label (ventana_registro, text="Introduzca datos", bg="white", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
-    Label (ventana_registro, text="").pack()
-    etiqueta_nombre = Label (ventana_registro, text="Nombre de usuario * ")
-    etiqueta_nombre .pack()
-    entrada_nombre = Entry (ventana_registro, textvariable=nombre_usuario)
-    entrada_nombre .pack()
-    etiqueta_clave = Label (ventana_registro, text="Contraseña * ")
-    etiqueta_clave.pack()
-    entrada_clave = Entry(ventana_registro, textvariable=clave, show="*")
-    entrada_clave.pack()
-    Label (ventana_registro, text="").pack()
-    Button(ventana_registro, text="Registrarse", width = "10", height = "1", font = ("Helvetica 12 bold"), command = registro_usuario,
-    foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
-
-def registro_usuario():
-    usuario_info = nombre_usuario.get()
-    clave_info = clave.get ()
-
-    file = open(usuario_info, "w")
-    file.write (usuario_info + "n")
-    file.write(clave_info)
-    file.close()
-
-    entrada_nombre.delete (0, END)
-    entrada_clave.delete(0, END)
-
-    Label (ventana_registro, text="Registro completado con éxito", fg="green", font=("calibri", 11)).pack()
-
+# Ventana acceder/Login
 def login ():
     global ventana_login
-    ventana_login = Toplevel (ventana_principal)
+    ventana_login = Toplevel()
     ventana_login.title("Acceso a la cuenta")
     ventana_login.geometry ("400x250")
     ventana_login.iconbitmap('data/zorro.ico')
 
-    Label (ventana_login, text="Acerque su carnet por el lector", bg="white", fg="#dd5228",
-    font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
+    Label (ventana_login, text="Acerque su carnet por el lector", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
     Label (ventana_login, text="") .pack()
 
     global verifica_usuario
-
     verifica_usuario = StringVar()
-
     global entrada_login_usuario
 
     Label (ventana_login, text="Carnet* ").pack()
     entrada_login_usuario = Entry(ventana_login, textvariable = verifica_usuario)
     entrada_login_usuario.pack()
+
     Label(ventana_login, text="").pack()
     Button(ventana_login, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
+    Label(ventana_login, text="").pack()
+    #Gif
+    rfid = PhotoImage(file='data/RFid.gif', master=ventana_login).subsample(4,4)
+    Label(ventana_login, image=rfid).pack()
 
+# Ventana Gerente
+def ventana_gerente():
+    ventana_login.destroy()
+    global ventana_gerente
+    ventana_gerente = Toplevel()
+    ventana_gerente.title("Ventana Gerente")
+    ventana_gerente.geometry ("500x350")
+    ventana_gerente.iconbitmap('data/zorro.ico')
+
+    Label (ventana_gerente, text="Bienvenido Gerente", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
+    Label (ventana_gerente, text="").pack()
+    Button(ventana_gerente, text="Acceder al chat", width = "15", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
+    command=exito_login, foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    Label (ventana_gerente, text="").pack()
+    Button(ventana_gerente, text="Registrar", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=registro,
+    foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    Label (ventana_gerente, text="").pack()
+    #Imagen
+    rfid = PhotoImage(file='data/origami.png', master=ventana_gerente).subsample(4,4)
+    Label(ventana_gerente, image=rfid).pack()
+
+# Función verificar identidad Login
 def verifica_login():
     Dataset = leer_datos()
-    print(entrada_login_usuario, type(entrada_login_usuario))
+    carnet = verifica_usuario.get ()
+    entrada_login_usuario.delete(0, END)
+    #El auxiliar es para que no de el mensaje de error si entra a gerente
+    aux=1
     for idx, depar in zip(Dataset["RFid"],Dataset["Departamento"]):
-        if int(str(idx)) == int(verifica_usuario):
+        if int(str(idx)) == int(carnet):
             if str(depar) == "Gerente":
-                #REdirige a ventana mood administrador
-                pass
+                ventana_gerente()
+                aux=0
             else:
                 exito_login()
+                aux=0
+    if aux == 1:
+        no_usuario()
 
+# Función por si el usuario se equivocó en el usuario o no existe
 def no_usuario ():
+    ventana_login.destroy()
+    
     global ventana_no_usuario
-    ventana_no_usuario = Toplevel (ventana_login)
+    ventana_no_usuario = Toplevel()
     ventana_no_usuario. title ("ERROR")
     ventana_no_usuario.geometry ("360x100")
     ventana_no_usuario.iconbitmap('data/zorro.ico')
-    Label (ventana_no_usuario, text="Usuario no encontrado", bg="white", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
+
+    Label (ventana_no_usuario, text="Usuario no encontrado", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
     Label (text="").pack()
     Button (ventana_no_usuario, text="Ok", command=borrar_no_usuario, width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
 
+# Función por si el usuario accedio correctamente
 def exito_login():
-    global ventana_exito
-    ventana_exito = Toplevel (ventana_login)
-    ventana_exito.title ("Exito")
-    ventana_exito.geometry ("350x100")
-    ventana_exito.iconbitmap('data/zorro.ico')
-    Label (ventana_exito, text="Login exitoso", bg="white", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
-    Label (text="").pack()
-    Button (ventana_exito, text="OK", command=borrar_exito_login, width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
-    foreground = "white", activebackground = 'white', activeforeground = '#dd5228') .pack()
+    ventana_principal.destroy()
     #Abrir Rocket
     os.system('python cliente.py')
-
-def no_clave():
-    global ventana_no_clave
-    ventana_no_clave = Toplevel (ventana_login)
-    ventana_no_clave.title ("ERROR")
-    ventana_no_clave.geometry ("350x100")
-    ventana_no_clave.iconbitmap('data/zorro.ico')
-    Label (ventana_no_clave, text="Contraseña incorrecta", bg="white", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)).pack()
-    Label (text="").pack()
-    Button (ventana_no_clave, text="Ok", command=borrar_no_clave, width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
-    foreground = "white", activebackground = 'white', activeforeground = '#dd5228') .pack()
-
-def borrar_exito_login():
-    ventana_exito.destroy()
-
-def borrar_no_clave():
-    ventana_no_clave.destroy()
 
 def borrar_no_usuario():
     ventana_no_usuario.destroy()
 
+#Main
 ventana_inicio()
