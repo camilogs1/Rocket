@@ -6,7 +6,7 @@ def accept_incoming_connections():
     while True:
         client, client_address = SERVER.accept()
         print("%s:%s se ha conectado." % client_address)
-        client.send(bytes("¡Bienvenidos a Rocket! ¡Ahora escribe tu nombre y pulsa enter!", "utf8"))
+        client.send(bytes("¡Bienvenidos a Rocket! Conectando...", "utf8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
 

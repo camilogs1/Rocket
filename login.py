@@ -2,6 +2,7 @@ from tkinter import *
 import os
 import tkinter
 import tkinter.font as tkFont
+from cliente import cliente
 from data import *
 import time
 pestas_color='#dd5228'
@@ -123,10 +124,14 @@ def exito_login(carnet):
     #Abrir Rocket
     fecha = time.strftime("%d/%m/%y")
     print(fecha)
-    hora_llegada = time.strftime("%H:%M:%S")
+    hora_llegada = time.strftime("%H:%M")
     print(hora_llegada)
     guardar_fecha(fecha, hora_llegada, carnet)
-    os.system('python cliente.py')
+    #os.system('python cliente.py')
+    nombre = obtener_nombre(carnet)
+    print(nombre)
+    #desconexion(carnet)
+    cliente(carnet, nombre)
 
 def borrar_no_usuario():
     ventana_no_usuario.destroy()
