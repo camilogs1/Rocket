@@ -10,6 +10,14 @@ def cliente(carnet, nombre):
     from tkinter import messagebox
     import json
 
+    top = tkinter.Tk()
+    top.iconbitmap('data/zorro.ico')
+    top.config(bg="white",bd=0)
+    top.title("Rocket")
+    label= tkinter.Label(top, text="Chat empresarial", bg="white", fg="#dd5228")
+    label.configure(font=("Bahnschrift Light bold", 19,tkFont.BOLD))
+    label.pack()
+
     def receive():
         #Maneja la recepción de mensajes.
         while True:
@@ -37,7 +45,7 @@ def cliente(carnet, nombre):
                     # items = conectlist.get()
                     # print(items, type(items))
                 elif "Conectando..." in msg:
-                    send(nombre)
+                    send()
                 else:
                     msg_list.insert(tkinter.END, msg)
                     msg_list.see(tkinter.END)
@@ -46,31 +54,28 @@ def cliente(carnet, nombre):
             except OSError:  # Posiblemente el cliente ha abandonado el chat.
                 break
 
-    def send(nombre=" "):  # el evento se pasa por binders.
+    def send(event=None):  # el evento se pasa por binders.
         #Maneja el envío de mensajes.
-
+        #print("Este es nombre: ",nombre)
+        nonlocal top
         msg = my_msg.get()
-        msg= nombre+msg
+        if msg == "":
+            msg = nombre
+        else: msg= msg
         my_msg.set("")  # Borra el campo de entrada.
         client_socket.send(bytes(msg, "utf8"))
         if msg == "quit":
             client_socket.close()
-            top.quit()
+            desconexion(carnet)
+            top.destroy()
 
     def on_closing(event=None):
         #Esta función debe ser llamada cuando se cierra la ventana
-        desconexion(carnet)
         my_msg.set("quit")
         send()
 
     #Creación pestaña
-    top = tkinter.Tk()
-    top.iconbitmap('data/zorro.ico')
-    top.config(bg="white",bd=0)
-    top.title("Rocket")
-    label= tkinter.Label(top, text="Chat empresarial", bg="white", fg="#dd5228")
-    label.configure(font=("Bahnschrift Light bold", 19,tkFont.BOLD))
-    label.pack()
+    
 
     messages_frame = tkinter.Frame(top)
     conectadosframe = tkinter.Frame(top)
@@ -109,7 +114,7 @@ def cliente(carnet, nombre):
     entry_field = tkinter.Entry(top, textvariable=my_msg, width= 45, highlightbackground='black', highlightthickness=3)
     entry_field.bind("<Return>", send)
     entry_field.pack()
-    send_button = tkinter.Button(top, text="Enviar", width = "10", height = "1", font = ("Helvetica 12 bold"), command=send,
+    send_button = tkinter.Button(top, text="Enviar", width = "10", height = "1", font = ("Helvetica 12 bold"), command= send,
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228')
     send_button.pack()
 

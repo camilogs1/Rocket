@@ -7,7 +7,7 @@ def leer_datos():
    import pandas as pd
    # with open('https://docs.google.com/spreadsheets/d/1ypZ0E3_FNjh2LzdQiAsyraQwsCIbrXGTE9kmYVJZXwI/export?format=csv&gid=1275166132') as csvfile:
    #    Dataset = csv.DictReader(csvfile)
-   Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1ypZ0E3_FNjh2LzdQiAsyraQwsCIbrXGTE9kmYVJZXwI/export?format=csv&gid=1275166132')
+   Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI/export?format=csv')
    return Dataset
 
 def nuevo_registro():
