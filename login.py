@@ -41,7 +41,7 @@ def login ():
     global ventana_login
     ventana_login = Toplevel()
     ventana_login.title("Acceso a la cuenta")
-    ventana_login.geometry ("400x250")
+    ventana_login.geometry ("350x200")
     ventana_login.iconbitmap('data/zorro.ico')
 
     Label (ventana_login, text="Acerque su carnet por el lector", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
@@ -53,15 +53,19 @@ def login ():
 
     Label (ventana_login, text="Carnet* ").pack()
     entrada_login_usuario = Entry(ventana_login, textvariable = verifica_usuario)
+    entrada_login_usuario.focus()
     entrada_login_usuario.pack()
+    entrada_login_usuario.bind("<Return>", verifica_login)
 
     Label(ventana_login, text="").pack()
     Button(ventana_login, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
     Label(ventana_login, text="").pack()
     #Gif
-    rfid = PhotoImage(file='data/RFid.gif', master=ventana_login).subsample(4,4)
-    Label(ventana_login, image=rfid).pack()
+    rocket = PhotoImage(file='data/rfid.png').subsample(3,3)
+    Label(ventana_login, image=rocket).place(x=50,y=40)
+
+    ventana_login.mainloop()
 
 # Ventana Gerente
 def ventana_gerente(carnet):
@@ -85,7 +89,7 @@ def ventana_gerente(carnet):
     Label(ventana_gerente, image=rfid).pack()
 
 # Función verificar identidad Login
-def verifica_login():
+def verifica_login(event):
     Dataset = leer_datos()
     global carnet
     carnet = verifica_usuario.get()

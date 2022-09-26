@@ -1,5 +1,5 @@
 from asyncio.windows_events import NULL
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def leer_datos():
@@ -57,9 +57,23 @@ def desconexion(carnet):
    fila = hoja_de_calculo.find(carnet)
    print(fila.row, fila.col)
    ultima = hoja_de_calculo.cell(fila.row, fila.col+3).value
-   hora_ultima = datetime.strptime(ultima, '%H:%M:%S')
+   hora_ultima = datetime.strptime(ultima, '%H:%M')
    conteo = desconetado - hora_ultima
    print(conteo)
+   total = hoja_de_calculo.cell(fila.row, fila.col+4).value
+   if(total == None):
+      ceros = "0:00:00"
+      total = datetime.strptime(ceros, '%H:%M:%S')
+      #total = datetime.strptime("0:00:00", "%H:%M:%S")
+   else: 
+      total = datetime.strptime(total, '%H:%M:%S')
+      #total = total.strftime('%H:%M:%S')
+
+   print(total)
+   total_horas = conteo + total
+   print(total_horas)
+   total_horas = total_horas.strftime('%H:%M:%S')
+   hoja_de_calculo.update_cell(fila.row, fila.col+4, total_horas)
    #tiempoinicial = hoja_de_calculo.cell(fila.row, fila.col+2).value
    #total = float(hora_final) - float(tiempoinicial)
    
