@@ -26,22 +26,12 @@ def ventana_inicio():
 
     ventana_principal.mainloop()
 
-# Ventana de registro
-def registro():
-    global ventana_registro
-    ventana_registro = Toplevel(ventana_principal)
-    ventana_registro.title ("Registro")
-    ventana_registro.geometry ("300x250")
-    ventana_registro.iconbitmap('data/zorro.ico')
-
-    #Acceso al Google Sheet
-
 # Ventana acceder/Login
 def login ():
     global ventana_login
     ventana_login = Toplevel()
     ventana_login.title("Acceso a la cuenta")
-    ventana_login.geometry ("350x200")
+    ventana_login.geometry ("330x250")
     ventana_login.iconbitmap('data/zorro.ico')
 
     Label (ventana_login, text="Acerque su carnet por el lector", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
@@ -51,7 +41,7 @@ def login ():
     verifica_usuario = StringVar()
     global entrada_login_usuario
 
-    Label (ventana_login, text="Carnet* ").pack()
+    #Label (ventana_login, text="Carnet* ").pack()
     entrada_login_usuario = Entry(ventana_login, textvariable = verifica_usuario)
     entrada_login_usuario.focus()
     entrada_login_usuario.pack()
@@ -62,8 +52,8 @@ def login ():
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
     Label(ventana_login, text="").pack()
     #Gif
-    rocket = PhotoImage(file='data/rfid.png').subsample(3,3)
-    Label(ventana_login, image=rocket).place(x=50,y=40)
+    rocket = PhotoImage(file='data/origamiRFid Negro.png').subsample(4,4)
+    Label(ventana_login, image=rocket).place(x=70,y=30)
 
     ventana_login.mainloop()
 
@@ -85,8 +75,8 @@ def ventana_gerente(carnet):
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (ventana_gerente, text="").pack()
     #Imagen
-    rfid = PhotoImage(file='data/origami.png', master=ventana_gerente).subsample(4,4)
-    Label(ventana_gerente, image=rfid).pack()
+    rocket1 = PhotoImage(file='data/zorro.png').subsample(3,3)
+    Label(ventana_gerente, image=rocket1).place(x=70,y=140)
 
 # Función verificar identidad Login
 def verifica_login(event):
@@ -127,13 +117,10 @@ def exito_login(carnet):
     ventana_principal.destroy()
     #Abrir Rocket
     fecha = time.strftime("%d/%m/%y")
-    print(fecha)
     hora_llegada = time.strftime("%H:%M")
-    print(hora_llegada)
     guardar_fecha(fecha, hora_llegada, carnet)
     #os.system('python cliente.py')
     nombre = obtener_nombre(carnet)
-    print(nombre)
     #desconexion(carnet)
     cliente(carnet, nombre)
 
