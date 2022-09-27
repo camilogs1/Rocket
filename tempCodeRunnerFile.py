@@ -1,1 +1,0 @@
-ventana_login.destroy()
