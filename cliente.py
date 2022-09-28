@@ -1,16 +1,15 @@
 from data import *
 from tkinter import *
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
+import tkinter
+from tkinter import VERTICAL
+import tkinter.font as tkFont
+from tkinter import messagebox
+import json
 
 def cliente(carnet, nombre):
     print("Cliente",carnet)
-    from socket import AF_INET, socket, SOCK_STREAM
-    from threading import Thread
-    import tkinter
-    from tkinter import VERTICAL
-    import tkinter.font as tkFont
-    from tkinter import messagebox
-    import json
-
 
     top = tkinter.Tk()
     top.iconbitmap('data/zorro.ico')
@@ -110,17 +109,20 @@ def cliente(carnet, nombre):
 
     def verifica_login(event):
         Dataset = leer_datos()
-        global carnet
+        #si se daña es por esto
+        #global carnet
         carnet = verifica_usuario.get()
         entrada_login_usuario.delete(0, END)
         #El auxiliar es para que no de el mensaje de error si entra a gerente
-        aux=1
+        aux=0
         for idx in Dataset["RFid"]:
             if int(str(idx)) == int(carnet):
+                aux+=1
+                client_socket.send(bytes(msg, "utf8"))
                 client_socket.close()
                 top.destroy()
         
-        if aux ==1:
+        if aux ==0:
             no_usuario()
 
 
@@ -128,16 +130,20 @@ def cliente(carnet, nombre):
         #Maneja el envío de mensajes.
         #print("Este es nombre: ",nombre)
         nonlocal top
+        global msg
         msg = my_msg.get()
         if msg == "":
             msg = nombre
         else: msg= msg
         my_msg.set("")  # Borra el campo de entrada.
-        client_socket.send(bytes(msg, "utf8"))
+        aux = 0
         if msg == "quit":
-            desconexion(carnet)
             login()
+            desconexion(carnet)
+            aux +=1
             #top.destroy()
+        if aux == 0:
+            client_socket.send(bytes(msg, "utf8"))
 
     def on_closing(event=None):
         #Esta función debe ser llamada cuando se cierra la ventana
