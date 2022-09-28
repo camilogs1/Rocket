@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 
 def leer_datos():
-   import csv
+   #import csv
    import pandas as pd
    # with open('https://docs.google.com/spreadsheets/d/1ypZ0E3_FNjh2LzdQiAsyraQwsCIbrXGTE9kmYVJZXwI/export?format=csv&gid=1275166132') as csvfile:
    #    Dataset = csv.DictReader(csvfile)
@@ -12,7 +12,7 @@ def leer_datos():
 
 def nuevo_registro():
    import webbrowser
-   import json
+   #import json
    webbrowser.open('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI')
 
 def guardar_fecha(fecha, hora_llegada, carnet):
@@ -20,13 +20,13 @@ def guardar_fecha(fecha, hora_llegada, carnet):
    import requests
    import json
 
-   print(fecha, hora_llegada, carnet)
+   #print(fecha, hora_llegada, carnet)
    response = requests.get("https://drive.google.com/uc?export=download&id=1ST17tc8tq_LVmpqFn-8pcxn6Ys4S4xD9").text
    credentials = json.loads(response)
    gc = gspread.service_account_from_dict(credentials)
    hoja_de_calculo = gc.open("Rocket").sheet1
    fila = hoja_de_calculo.find(carnet)
-   print(fila.row, fila.col)
+   #print(fila.row, fila.col)
    hoja_de_calculo.update_cell(fila.row, fila.col+1,fecha)
    hoja_de_calculo.update_cell(fila.row, fila.col+3, hora_llegada)
    ultimaconexion = hoja_de_calculo.cell(fila.row, fila.col+2).value
@@ -55,11 +55,11 @@ def desconexion(carnet):
    gc = gspread.service_account_from_dict(credentials)
    hoja_de_calculo = gc.open("Rocket").sheet1
    fila = hoja_de_calculo.find(carnet)
-   print(fila.row, fila.col)
+   #print(fila.row, fila.col)
    ultima = hoja_de_calculo.cell(fila.row, fila.col+3).value
    hora_ultima = datetime.strptime(ultima, '%H:%M')
    conteo = desconetado - hora_ultima
-   print(conteo)
+   #print(conteo)
    total = hoja_de_calculo.cell(fila.row, fila.col+4).value
    if(total == None):
       ceros = "0:00:00"
@@ -69,9 +69,9 @@ def desconexion(carnet):
       total = datetime.strptime(total, '%H:%M:%S')
       #total = total.strftime('%H:%M:%S')
 
-   print(total)
+   #print(total)
    total_horas = conteo + total
-   print(total_horas)
+   #print(total_horas)
    total_horas = total_horas.strftime('%H:%M:%S')
    hoja_de_calculo.update_cell(fila.row, fila.col+4, total_horas)
    #tiempoinicial = hoja_de_calculo.cell(fila.row, fila.col+2).value

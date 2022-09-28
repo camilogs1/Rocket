@@ -5,6 +5,7 @@ import tkinter.font as tkFont
 from cliente import cliente
 from data import *
 import time
+from datetime import datetime
 pestas_color='#dd5228'
 
 # Ventana de inicio
@@ -86,12 +87,16 @@ def verifica_login(event):
     entrada_login_usuario.delete(0, END)
     #El auxiliar es para que no de el mensaje de error si entra a gerente
     aux=1
-    for idx, depar in zip(Dataset["RFid"],Dataset["Departamento"]):
+    #guardando el dia en una variable
+    dia = datetime.today().weekday()
+    print(dia)
+    for idx, depar, genero in zip(Dataset["RFid"],Dataset["Departamento"], Dataset["Genero"]):
         if int(str(idx)) == int(carnet):
             if str(depar) == "Gerente":
                 ventana_gerente(carnet)
                 aux=0
             else:
+                #aqui va el condicional genero y dia
                 exito_login(carnet)
                 aux=0
     if aux == 1:
