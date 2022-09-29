@@ -89,16 +89,18 @@ def verifica_login(event):
     aux=1
     #guardando el dia en una variable
     dia = datetime.today().weekday()
-    print(dia)
     for idx, depar, genero in zip(Dataset["RFid"],Dataset["Departamento"], Dataset["Genero"]):
         if int(str(idx)) == int(carnet):
             if str(depar) == "Gerente":
                 ventana_gerente(carnet)
                 aux=0
             else:
-                #aqui va el condicional genero y dia
-                exito_login(carnet)
-                aux=0
+                if str(genero) == "Masculino" and dia == 2 or str(genero) == "Femenino" and dia == 3:
+                    usuario_descansa()
+                    aux=0
+                else:
+                    exito_login(carnet)
+                    aux=0
     if aux == 1:
         no_usuario()
 
@@ -117,6 +119,21 @@ def no_usuario ():
     Button (ventana_no_usuario, text="Ok", command=borrar_no_usuario, width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
     foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
 
+#Funcion para mostrar que el usuario no puede ingresar por ser dia de descanso
+def usuario_descansa ():
+    ventana_login.destroy()
+    
+    global ventana_usuario_descansa
+    ventana_usuario_descansa = Toplevel()
+    ventana_usuario_descansa. title ("ERROR")
+    ventana_usuario_descansa.geometry ("360x100")
+    ventana_usuario_descansa.iconbitmap('data/zorro.ico')
+
+    Label (ventana_usuario_descansa, text="Usuario no debe trabajar hoy", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
+    Label (text="").pack()
+    Button (ventana_usuario_descansa, text="Ok", command=borrar_usuario_descansa, width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
+    foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+
 # Función por si el usuario accedio correctamente
 def exito_login(carnet):
     ventana_principal.destroy()
@@ -131,6 +148,9 @@ def exito_login(carnet):
 
 def borrar_no_usuario():
     ventana_no_usuario.destroy()
+
+def borrar_usuario_descansa():
+    ventana_usuario_descansa.destroy()
 
 #Main
 ventana_inicio()
