@@ -6,6 +6,7 @@ from cliente import cliente
 from data import *
 import time
 from datetime import datetime
+import cv2
 pestas_color='#dd5228'
 
 # Ventana de inicio
@@ -42,7 +43,6 @@ def login ():
     verifica_usuario = StringVar()
     global entrada_login_usuario
 
-    #Label (ventana_login, text="Carnet* ").pack()
     entrada_login_usuario = Entry(ventana_login, textvariable = verifica_usuario)
     entrada_login_usuario.focus()
     entrada_login_usuario.pack()
@@ -55,8 +55,38 @@ def login ():
     #Gif
     rocket = PhotoImage(file='data/origamiRFid Negro.png').subsample(4,4)
     Label(ventana_login, image=rocket).place(x=70,y=30)
-
+    #Acceso ventana FACEID
+    rocket_FACEID = PhotoImage(file='data/abstractoFACEid.png').subsample(9,9)
+    Button(ventana_login, image=rocket_FACEID, command = ventana_FACEID).place(x=260,y=170)
     ventana_login.mainloop()
+
+# Ventana FACEID
+def ventana_FACEID():
+    global ventana_faceID
+    ventana_faceID = Toplevel()
+    ventana_faceID.title("FaceID")
+    ventana_faceID.geometry ("330x250")
+    ventana_faceID.iconbitmap('data/zorro.ico')
+
+    Label (ventana_faceID, text="Acerque su rostro a la cámara", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
+    Label (ventana_faceID, text="") .pack()
+
+    #Abrir la cámara
+    capture = cv2.VideoCapture(0)
+    while (capture.isOpened()):
+        ret, frame = capture.read()
+        cv2.imshow('webCam',frame)
+        if (cv2.waitKey(1) == ord('s')):
+            break
+    capture.release()
+    #cv2.destroyAllWindows()
+
+    Label(ventana_faceID, text="").pack()
+    '''
+    Button(ventana_faceID, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
+    foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
+    '''
+    Label(ventana_faceID, text="").pack()
 
 # Ventana Gerente
 def ventana_gerente(carnet):
