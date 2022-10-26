@@ -79,7 +79,7 @@ def ventana_FACEID():
         if (cv2.waitKey(1) == ord('s')):
             break
     capture.release()
-    #cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
     Label(ventana_faceID, text="").pack()
     '''
