@@ -62,31 +62,72 @@ def login ():
 
 # Ventana FACEID
 def ventana_FACEID():
-    global ventana_faceID
-    ventana_faceID = Toplevel()
-    ventana_faceID.title("FaceID")
-    ventana_faceID.geometry ("330x250")
-    ventana_faceID.iconbitmap('data/zorro.ico')
+    # global ventana_faceID
+    # ventana_faceID = Toplevel()
+    # ventana_faceID.title("FaceID")
+    # ventana_faceID.geometry ("330x250")
+    # ventana_faceID.iconbitmap('data/zorro.ico')
 
-    Label (ventana_faceID, text="Acerque su rostro a la cámara", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
-    Label (ventana_faceID, text="") .pack()
+    # Label (ventana_faceID, text="Acerque su rostro a la cámara", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
+    # Label (ventana_faceID, text="") .pack()
 
     #Abrir la cámara
-    capture = cv2.VideoCapture(0)
-    while (capture.isOpened()):
-        ret, frame = capture.read()
-        cv2.imshow('webCam',frame)
-        if (cv2.waitKey(1) == ord('s')):
+    # capture = cv2.VideoCapture(0)
+    # while (capture.isOpened()):
+    #     ret, frame = capture.read()
+    #     cv2.imshow('webCam',frame)
+    #     if (cv2.waitKey(1) == ord('s')):
+    #         break
+    # capture.release()
+    # cv2.destroyAllWindows()
+
+    import cv2
+    import os
+
+    if not os.path.exists('Rostros_login'):
+        os.makedirs('Rostros_login')
+
+    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+
+    faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
+
+    count = 0
+    while count != 80:
+        ret,frame = cap.read()
+        frame = cv2.flip(frame,1)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        auxFrame = frame.copy()
+
+        faces = faceClassif.detectMultiScale(gray, 1.3, 5)
+
+        k = cv2.waitKey(1)
+        if k == 27:
             break
-    capture.release()
+
+        for (x,y,w,h) in faces:
+            cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
+            rostro = auxFrame[y:y+h,x:x+w]
+            rostro = cv2.resize(rostro,(150,150), interpolation=cv2.INTER_CUBIC)
+            if count == 79:
+                cv2.imwrite('Rostros_login/rostro.jpg',rostro)
+                cv2.imshow('rostro',rostro)
+            
+            count = count +1
+            #time.sleep(8)
+            #if k == ord('s'):
+        cv2.rectangle(frame,(150,5),(450,25),(255,255,255),-1)
+        cv2.putText(frame,'Acerque su rostro a la camara',(160,20), 2, 0.5,(255,0,0),1,cv2.LINE_AA)
+        cv2.imshow('Rocket',frame)
+
+    cap.release()
     cv2.destroyAllWindows()
 
-    Label(ventana_faceID, text="").pack()
+    # Label(ventana_faceID, text="").pack()
     '''
     Button(ventana_faceID, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
     foreground = "white", bg = '#dd5228', activebackground = 'white', activeforeground = '#dd5228').pack()
     '''
-    Label(ventana_faceID, text="").pack()
+    # Label(ventana_faceID, text="").pack()
 
 # Ventana Gerente
 def ventana_gerente(carnet):
@@ -102,12 +143,21 @@ def ventana_gerente(carnet):
     Button(ventana_gerente, text="Acceder al chat", width = "15", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color,
     command=lambda:exito_login(carnet), foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (ventana_gerente, text="").pack()
-    Button(ventana_gerente, text="Registrar", width = "10", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=nuevo_registro,
-    foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    Label (ventana_gerente, text="Ingrese el número de identificación del usuario a registrar").pack()
+    dato = StringVar()
+    cedula = tkinter.Entry(ventana_gerente, textvariable=dato)
+    cedula.pack()
+    num = dato.get()
+    print(num)
+    Label (ventana_gerente, text="").pack()
+    Button(ventana_gerente, text="Registrar RFID", width = "20", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=nuevo_registro, foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    Label (ventana_gerente, text="").pack()
+    Button(ventana_gerente, text="Registrar FaceID", width = "20", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=lambda: nuevo_registro_face(num),foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    
     Label (ventana_gerente, text="").pack()
     #Imagen
-    rocket1 = PhotoImage(file='data/zorro.png').subsample(3,3)
-    Label(ventana_gerente, image=rocket1).place(x=70,y=140)
+    #rocket1 = PhotoImage(file='data/zorro.png').subsample(3,3)
+    #Label(ventana_gerente, image=rocket1).place(x=70,y=140)
 
 # Función verificar identidad Login
 def verifica_login(event):
