@@ -58,6 +58,24 @@ def nuevo_registro_face(cedula):
    cap.release()
    cv2.destroyAllWindows()
 
+   import cv2 # OpenCV para computer vision
+   import pandas as pd
+   import numpy as np
+
+   Ruta_dataset = 'Rostros{}'.format(cedula)
+   Columnas=128
+   Filas=128
+   Dataset=np.zeros((4,Filas*Columnas))
+   cont=0
+   for i in range(0,4,1):
+      Ruta=Ruta_dataset + '/rostro_' + str(i) + '_{}.jpg'.format(cedula)
+      img=cv2.imread(Ruta)
+      I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+      I_gris=cv2.resize(I_gris, (Filas,Columnas), interpolation = cv2.INTER_AREA)
+      Dataset[i,0:Filas*Columnas]=I_gris.reshape((1,Filas*Columnas))
+
+   registrar_rostros(cedula, Dataset)
+
 def guardar_fecha(fecha, hora_llegada, carnet):
    import gspread
    import requests
@@ -76,6 +94,21 @@ def guardar_fecha(fecha, hora_llegada, carnet):
    if(ultimaconexion == None):
       hoja_de_calculo.update_cell(fila.row, fila.col+2, hora_llegada)
 
+def registrar_rostros(ID, faceid):
+   import gspread
+   import requests
+   import json
+   import numpy as np
+   import pandas as pd
+
+   #print(fecha, hora_llegada, carnet)
+   response = requests.get("https://drive.google.com/uc?export=download&id=1ST17tc8tq_LVmpqFn-8pcxn6Ys4S4xD9").text
+   credentials = json.loads(response)
+   gc = gspread.service_account_from_dict(credentials)
+   hoja_de_calculo = gc.open("Rocket").sheet1
+   fila = hoja_de_calculo.find(ID)
+   new = str(faceid)
+   hoja_de_calculo.update_cell(fila.row, fila.col+10,new)
 
 def obtener_nombre(carnet):
    datos = leer_datos()
