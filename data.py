@@ -18,11 +18,7 @@ def nuevo_registro():
 def nuevo_registro_face(cedula):
    import cv2
    import os
-   print(cedula)
    #Añadir la cedula al nombre de la carpeta para saber a que usuario corresponde
-   import cv2
-   import os
-   cedula = '123'
    if not os.path.exists('Rostros{}'.format(cedula)):
       os.makedirs('Rostros{}'.format(cedula))
 

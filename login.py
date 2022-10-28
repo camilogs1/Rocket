@@ -62,25 +62,6 @@ def login ():
 
 # Ventana FACEID
 def ventana_FACEID():
-    # global ventana_faceID
-    # ventana_faceID = Toplevel()
-    # ventana_faceID.title("FaceID")
-    # ventana_faceID.geometry ("330x250")
-    # ventana_faceID.iconbitmap('data/zorro.ico')
-
-    # Label (ventana_faceID, text="Acerque su rostro a la cámara", fg="#dd5228", font=("Bahnschrift Light bold", 12,tkFont.BOLD)) .pack()
-    # Label (ventana_faceID, text="") .pack()
-
-    #Abrir la cámara
-    # capture = cv2.VideoCapture(0)
-    # while (capture.isOpened()):
-    #     ret, frame = capture.read()
-    #     cv2.imshow('webCam',frame)
-    #     if (cv2.waitKey(1) == ord('s')):
-    #         break
-    # capture.release()
-    # cv2.destroyAllWindows()
-
     import cv2
     import os
 
@@ -147,17 +128,12 @@ def ventana_gerente(carnet):
     dato = StringVar()
     cedula = tkinter.Entry(ventana_gerente, textvariable=dato)
     cedula.pack()
-    num = dato.get()
-    print(num)
     Label (ventana_gerente, text="").pack()
     Button(ventana_gerente, text="Registrar RFID", width = "20", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=nuevo_registro, foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     Label (ventana_gerente, text="").pack()
-    Button(ventana_gerente, text="Registrar FaceID", width = "20", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=lambda: nuevo_registro_face(num),foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
+    Button(ventana_gerente, text="Registrar FaceID", width = "20", height = "1", font = ("Helvetica 12 bold"), bg=pestas_color, command=lambda: nuevo_registro_face(dato.get()),foreground = "white", activebackground = 'white', activeforeground = '#dd5228').pack()
     
     Label (ventana_gerente, text="").pack()
-    #Imagen
-    #rocket1 = PhotoImage(file='data/zorro.png').subsample(3,3)
-    #Label(ventana_gerente, image=rocket1).place(x=70,y=140)
 
 # Función verificar identidad Login
 def verifica_login(event):
