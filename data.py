@@ -10,6 +10,11 @@ import cv2 # OpenCV para computer vision
 import time
 import os
 import glob
+import sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
 
 
 def leer_datos():
@@ -90,17 +95,32 @@ def registrar_rostros(ID, faceid):
    faceid = pd.DataFrame(faceid)
    faceid.to_csv('bd/'+ID+'.csv')
 
-def verificar_rostros():
-   files = glob.glob('bd' + "/*.csv") # bd\\1002.csv
+def modelo():
+   files = glob.glob('bd' + "/*.csv") 
    datos_total = []
    for i in files:
       dato = pd.read_csv(i)
       id = i.replace('bd\\','')
       id = id.replace('.csv','')
       dato['cedula'] = id
-      dato = np.array(dato)
-      datos_total.append(dato)
-   #print(datos_total)
+      dato = np.array(dato, dtype=int)
+      for j in dato:
+         datos_total.append(j)
+   df = pd.DataFrame(datos_total)
+   df = df.drop(0, axis=1)
+   df = np.array(df)
+   X = df[:,0:16384]
+   Y = df[:,16384]
+   X_train, X_test,Y_train, Y_test= train_test_split(X,Y,test_size=0.2,random_state=14541)
+   scaler = MinMaxScaler()
+   X_train = scaler.fit_transform(X_train)
+   X_test = scaler.transform(X_test)
+   Modelo_2 = LinearDiscriminantAnalysis()
+   Modelo_2.fit(X_train, Y_train)
+   
+   
+   Y_pred_2 =Modelo_2.predict (X_test)
+   print("Accuracy LDA",accuracy_score(Y_test, Y_pred_2))
 
 def obtener_nombre(carnet):
    datos = leer_datos()
