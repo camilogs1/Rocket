@@ -197,9 +197,7 @@ def exito_login(carnet):
     fecha = time.strftime("%d/%m/%y")
     hora_llegada = time.strftime("%H:%M")
     guardar_fecha(fecha, hora_llegada, carnet)
-    #os.system('python cliente.py')
     nombre = obtener_nombre(carnet)
-    #desconexion(carnet)
     cliente(carnet, nombre)
 
 def borrar_no_usuario():

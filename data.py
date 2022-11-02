@@ -1,23 +1,25 @@
 from asyncio.windows_events import NULL
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta   
+import gspread
+import requests
+import json
+import numpy as np
+import pandas as pd
+import webbrowser
+import cv2 # OpenCV para computer vision
+import time
+import os
+import glob
 
 
 def leer_datos():
-   #import csv
-   import pandas as pd
-   # with open('https://docs.google.com/spreadsheets/d/1ypZ0E3_FNjh2LzdQiAsyraQwsCIbrXGTE9kmYVJZXwI/export?format=csv&gid=1275166132') as csvfile:
-   #    Dataset = csv.DictReader(csvfile)
    Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI/export?format=csv')
    return Dataset
 
 def nuevo_registro():
-   import webbrowser
-   #import json
    webbrowser.open('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI')
 
 def nuevo_registro_face(cedula):
-   import cv2
-   import os
    #Añadir la cedula al nombre de la carpeta para saber a que usuario corresponde
    if not os.path.exists('Rostros{}'.format(cedula)):
       os.makedirs('Rostros{}'.format(cedula))
@@ -58,10 +60,6 @@ def nuevo_registro_face(cedula):
    cap.release()
    cv2.destroyAllWindows()
 
-   import cv2 # OpenCV para computer vision
-   import pandas as pd
-   import numpy as np
-
    Ruta_dataset = 'Rostros{}'.format(cedula)
    Columnas=128
    Filas=128
@@ -77,17 +75,11 @@ def nuevo_registro_face(cedula):
    registrar_rostros(cedula, Dataset)
 
 def guardar_fecha(fecha, hora_llegada, carnet):
-   import gspread
-   import requests
-   import json
-
-   #print(fecha, hora_llegada, carnet)
    response = requests.get("https://drive.google.com/uc?export=download&id=1ST17tc8tq_LVmpqFn-8pcxn6Ys4S4xD9").text
    credentials = json.loads(response)
    gc = gspread.service_account_from_dict(credentials)
    hoja_de_calculo = gc.open("Rocket").sheet1
    fila = hoja_de_calculo.find(carnet)
-   #print(fila.row, fila.col)
    hoja_de_calculo.update_cell(fila.row, fila.col+1,fecha)
    hoja_de_calculo.update_cell(fila.row, fila.col+3, hora_llegada)
    ultimaconexion = hoja_de_calculo.cell(fila.row, fila.col+2).value
@@ -95,20 +87,14 @@ def guardar_fecha(fecha, hora_llegada, carnet):
       hoja_de_calculo.update_cell(fila.row, fila.col+2, hora_llegada)
 
 def registrar_rostros(ID, faceid):
-   import gspread
-   import requests
-   import json
-   import numpy as np
-   import pandas as pd
+   faceid = pd.DataFrame(faceid)
+   faceid.to_csv('bd/'+ID+'.csv')
 
-   #print(fecha, hora_llegada, carnet)
-   response = requests.get("https://drive.google.com/uc?export=download&id=1ST17tc8tq_LVmpqFn-8pcxn6Ys4S4xD9").text
-   credentials = json.loads(response)
-   gc = gspread.service_account_from_dict(credentials)
-   hoja_de_calculo = gc.open("Rocket").sheet1
-   fila = hoja_de_calculo.find(ID)
-   new = str(faceid)
-   hoja_de_calculo.update_cell(fila.row, fila.col+10,new)
+def verificar_rostros():
+   files = glob.glob('bd' + "/*.csv")
+   for i in files:
+      dato = pd.read_csv(i)
+      print(dato)
 
 def obtener_nombre(carnet):
    datos = leer_datos()
@@ -119,11 +105,6 @@ def obtener_nombre(carnet):
    return nombreU
 
 def desconexion(carnet):
-   import gspread
-   import requests
-   import json
-   import time
-   from datetime import datetime
    hora_final = time.strftime("%H:%M")
    desconetado = datetime.strptime(hora_final, '%H:%M')
    response = requests.get("https://drive.google.com/uc?export=download&id=1ST17tc8tq_LVmpqFn-8pcxn6Ys4S4xD9").text
@@ -131,25 +112,18 @@ def desconexion(carnet):
    gc = gspread.service_account_from_dict(credentials)
    hoja_de_calculo = gc.open("Rocket").sheet1
    fila = hoja_de_calculo.find(carnet)
-   #print(fila.row, fila.col)
    ultima = hoja_de_calculo.cell(fila.row, fila.col+3).value
    hora_ultima = datetime.strptime(ultima, '%H:%M')
    conteo = desconetado - hora_ultima
-   #print(conteo)
    total = hoja_de_calculo.cell(fila.row, fila.col+4).value
    if(total == None):
       ceros = "0:00:00"
       total = datetime.strptime(ceros, '%H:%M:%S')
-      #total = datetime.strptime("0:00:00", "%H:%M:%S")
    else: 
       total = datetime.strptime(total, '%H:%M:%S')
-      #total = total.strftime('%H:%M:%S')
 
    #print(total)
    total_horas = conteo + total
-   #print(total_horas)
    total_horas = total_horas.strftime('%H:%M:%S')
    hoja_de_calculo.update_cell(fila.row, fila.col+4, total_horas)
-   #tiempoinicial = hoja_de_calculo.cell(fila.row, fila.col+2).value
-   #total = float(hora_final) - float(tiempoinicial)
    
