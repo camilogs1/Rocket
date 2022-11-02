@@ -15,6 +15,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt #Para graficar
+from sklearn.neighbors import KNeighborsClassifier
+
 
 def leer_datos():
    Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI/export?format=csv')
@@ -49,9 +51,9 @@ def nuevo_registro_face(cedula):
          cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
          rostro = auxFrame[y:y+h,x:x+w]
          rostro = cv2.resize(rostro,(150,150), interpolation=cv2.INTER_CUBIC)
-         if count%20 == 0:
+         if count%10 == 0:
             import math
-            aux = math.trunc(count/20)
+            aux = math.trunc(count/10)
             cv2.imwrite('Rostros{}/rostro_{}_{}.jpg'.format(cedula,str(aux),cedula),rostro)
             cv2.imshow('rostro',rostro)
          
@@ -67,9 +69,9 @@ def nuevo_registro_face(cedula):
    Ruta_dataset = 'Rostros{}'.format(cedula)
    Columnas=128
    Filas=128
-   Dataset=np.zeros((4,Filas*Columnas))
+   Dataset=np.zeros((10,Filas*Columnas))
    cont=0
-   for i in range(0,4,1):
+   for i in range(0,10,1):
       Ruta=Ruta_dataset + '/rostro_' + str(i) + '_{}.jpg'.format(cedula)
       img=cv2.imread(Ruta)
       I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -105,16 +107,20 @@ def modelo():
       dato = np.array(dato, dtype=int)
       for j in dato:
          datos_total.append(j)
+   print(len(datos_total))
    df = pd.DataFrame(datos_total)
    df = df.drop(0, axis=1)
-   df = np.array(df)
+   df.to_csv('datos.csv')
+   df = df.to_numpy()
    X = df[:,0:16384]
    Y = df[:,16384]
-   X_train, X_test,Y_train, Y_test= train_test_split(X,Y,test_size=0.2,random_state=14541)
+   X_train, X_test,Y_train, Y_test= train_test_split(X,Y,random_state=14541)
    scaler = MinMaxScaler()
+
    X_train = scaler.fit_transform(X_train)
    X_test = scaler.transform(X_test)
-   Modelo_2 = LinearDiscriminantAnalysis()
+   #Modelo_2 = LinearDiscriminantAnalysis()
+   Modelo_2 =  KNeighborsClassifier(3)
    Modelo_2.fit(X_train, Y_train)
    
    Columnas=128
@@ -125,13 +131,19 @@ def modelo():
    I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
    I_gris=cv2.resize(I_gris, (Filas,Columnas), interpolation = cv2.INTER_AREA)
    Dataset=I_gris.reshape((1,Filas*Columnas))
-   print(Dataset)
-
    Y_pred_2 =Modelo_2.predict(Dataset)
    print("Accuracy LDA",Y_pred_2)
+   foto = df[np.where(df[:,16384] == Y_pred_2)]
+   foto1 = foto[0]
+   foto1 = foto1[0:16384]
    
+   Imagen=foto1.reshape((Filas,Columnas))
+   plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
+   plt.show()
+
    Imagen=Dataset.reshape((Filas,Columnas))
    plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
+   plt.show()
 
 def obtener_nombre(carnet):
    datos = leer_datos()
