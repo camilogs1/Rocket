@@ -91,10 +91,16 @@ def registrar_rostros(ID, faceid):
    faceid.to_csv('bd/'+ID+'.csv')
 
 def verificar_rostros():
-   files = glob.glob('bd' + "/*.csv")
+   files = glob.glob('bd' + "/*.csv") # bd\\1002.csv
+   datos_total = []
    for i in files:
       dato = pd.read_csv(i)
-      print(dato)
+      id = i.replace('bd\\','')
+      id = id.replace('.csv','')
+      dato['cedula'] = id
+      dato = np.array(dato)
+      datos_total.append(dato)
+   #print(datos_total)
 
 def obtener_nombre(carnet):
    datos = leer_datos()
