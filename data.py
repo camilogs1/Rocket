@@ -14,8 +14,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
-
+import matplotlib.pyplot as plt #Para graficar
 
 def leer_datos():
    Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI/export?format=csv')
@@ -118,9 +117,21 @@ def modelo():
    Modelo_2 = LinearDiscriminantAnalysis()
    Modelo_2.fit(X_train, Y_train)
    
+   Columnas=128
+   Filas=128
+   Dataset=np.zeros((1,Filas*Columnas))
+   Ruta='Rostros_login/rostro.jpg'
+   img=cv2.imread(Ruta)
+   I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+   I_gris=cv2.resize(I_gris, (Filas,Columnas), interpolation = cv2.INTER_AREA)
+   Dataset=I_gris.reshape((1,Filas*Columnas))
+   print(Dataset)
+
+   Y_pred_2 =Modelo_2.predict(Dataset)
+   print("Accuracy LDA",Y_pred_2)
    
-   Y_pred_2 =Modelo_2.predict (X_test)
-   print("Accuracy LDA",accuracy_score(Y_test, Y_pred_2))
+   Imagen=Dataset.reshape((Filas,Columnas))
+   plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
 
 def obtener_nombre(carnet):
    datos = leer_datos()
