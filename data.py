@@ -86,7 +86,7 @@ def guardar_fecha(fecha, hora_llegada, carnet):
    credentials = json.loads(response)
    gc = gspread.service_account_from_dict(credentials)
    hoja_de_calculo = gc.open("Rocket").sheet1
-   fila = hoja_de_calculo.find(carnet)
+   fila = hoja_de_calculo.find(str(carnet))
    hoja_de_calculo.update_cell(fila.row, fila.col+1,fecha)
    hoja_de_calculo.update_cell(fila.row, fila.col+3, hora_llegada)
    ultimaconexion = hoja_de_calculo.cell(fila.row, fila.col+2).value
@@ -117,11 +117,11 @@ def modelo():
    X_train, X_test,Y_train, Y_test= train_test_split(X,Y,test_size=0.1,random_state=14541)
    X_train = X
    Y_train = Y
-   scaler = MinMaxScaler()
-   X_train = scaler.fit_transform(X_train)
-   X_test = scaler.transform(X_test)
-   Modelo_2 = LinearDiscriminantAnalysis()
-   #Modelo_2 =  KNeighborsClassifier(3)
+   #scaler = MinMaxScaler()
+   #X_train = scaler.fit_transform(X_train)
+   #X_test = scaler.transform(X_test)
+   #Modelo_2 = LinearDiscriminantAnalysis()
+   Modelo_2 =  KNeighborsClassifier(3)
    Modelo_2.fit(X_train, Y_train)
    Columnas=128
    Filas=128
@@ -158,6 +158,7 @@ def modelo():
    cv2.imshow('Autenticado',rostro)
    cv2.waitKey(2000)
    cv2.destroyAllWindows()
+   return prediccion
    
 
 def obtener_nombre(carnet):
@@ -167,6 +168,14 @@ def obtener_nombre(carnet):
          nombreU = nombre
    
    return nombreU
+
+def obtener_nombre_pre(id):
+   datos = leer_datos()
+   for ced, rfid in zip(datos["ID"],datos["RFid"]):
+      if str(ced) == str(id):
+         carnet = rfid
+   
+   return carnet
 
 def desconexion(carnet):
    hora_final = time.strftime("%H:%M")

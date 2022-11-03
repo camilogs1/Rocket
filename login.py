@@ -105,8 +105,9 @@ def ventana_FACEID():
     cap.release()
     cv2.destroyAllWindows()
 
-    modelo()
-
+    id_pred = modelo()
+    card = obtener_nombre_pre(id_pred)
+    exito_login(card)
     # Label(ventana_faceID, text="").pack()
     '''
     Button(ventana_faceID, text="Acceder", width = "10", height = "1", font = ("Helvetica 12 bold"), command = verifica_login,
