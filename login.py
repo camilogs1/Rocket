@@ -73,7 +73,7 @@ def ventana_FACEID():
     faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
 
     count = 0
-    while count != 80:
+    while count != 91:
         ret,frame = cap.read()
         frame = cv2.flip(frame,1)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -89,8 +89,10 @@ def ventana_FACEID():
             cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
             rostro = auxFrame[y:y+h,x:x+w]
             rostro = cv2.resize(rostro,(150,150), interpolation=cv2.INTER_CUBIC)
-            if count == 79:
-                cv2.imwrite('Rostros_login/rostro.jpg',rostro)
+            if count == 30 or count == 60 or count==90:
+                import math
+                aux = math.trunc(count/30)
+                cv2.imwrite('Rostros_login/rostro_{}.jpg'.format(str(aux)),rostro)
                 cv2.imshow('rostro',rostro)
             
             count = count +1
@@ -102,6 +104,8 @@ def ventana_FACEID():
 
     cap.release()
     cv2.destroyAllWindows()
+
+    modelo()
 
     # Label(ventana_faceID, text="").pack()
     '''

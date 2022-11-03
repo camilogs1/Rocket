@@ -16,7 +16,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt #Para graficar
 from sklearn.neighbors import KNeighborsClassifier
-
+from sklearn.metrics import accuracy_score,precision_score
+from statistics import mode
 
 def leer_datos():
    Dataset = pd.read_csv('https://docs.google.com/spreadsheets/d/1_4Mf30RrG7Vj43LnU8EyCZ7nb1nRrHT50J1D0zFpCzI/export?format=csv')
@@ -107,43 +108,57 @@ def modelo():
       dato = np.array(dato, dtype=int)
       for j in dato:
          datos_total.append(j)
-   print(len(datos_total))
    df = pd.DataFrame(datos_total)
    df = df.drop(0, axis=1)
    df.to_csv('datos.csv')
    df = df.to_numpy()
    X = df[:,0:16384]
    Y = df[:,16384]
-   X_train, X_test,Y_train, Y_test= train_test_split(X,Y,random_state=14541)
+   X_train, X_test,Y_train, Y_test= train_test_split(X,Y,test_size=0.1,random_state=14541)
+   X_train = X
+   Y_train = Y
    scaler = MinMaxScaler()
-
    X_train = scaler.fit_transform(X_train)
    X_test = scaler.transform(X_test)
-   #Modelo_2 = LinearDiscriminantAnalysis()
-   Modelo_2 =  KNeighborsClassifier(3)
+   Modelo_2 = LinearDiscriminantAnalysis()
+   #Modelo_2 =  KNeighborsClassifier(3)
    Modelo_2.fit(X_train, Y_train)
-   
    Columnas=128
    Filas=128
-   Dataset=np.zeros((1,Filas*Columnas))
-   Ruta='Rostros_login/rostro.jpg'
-   img=cv2.imread(Ruta)
-   I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-   I_gris=cv2.resize(I_gris, (Filas,Columnas), interpolation = cv2.INTER_AREA)
-   Dataset=I_gris.reshape((1,Filas*Columnas))
+   Dataset=np.zeros((3,Filas*Columnas))
+
+   for i in range(0,3,1):
+      Ruta='Rostros_login/rostro_' + str(i+1) +'.jpg'
+      img=cv2.imread(Ruta)
+      I_gris=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+      I_gris=cv2.resize(I_gris, (Filas,Columnas), interpolation = cv2.INTER_AREA)
+      Dataset[i,0:Filas*Columnas]=I_gris.reshape((1,Filas*Columnas))
+
    Y_pred_2 =Modelo_2.predict(Dataset)
-   print("Accuracy LDA",Y_pred_2)
-   foto = df[np.where(df[:,16384] == Y_pred_2)]
-   foto1 = foto[0]
+   print("Predicciones",Y_pred_2)
+   prediccion = mode(Y_pred_2)
+
+   foto = df[np.where(df[:,16384] == prediccion)]
+   foto1 = foto[2]
    foto1 = foto1[0:16384]
    
-   Imagen=foto1.reshape((Filas,Columnas))
-   plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
-   plt.show()
+   #Imagen=foto1.reshape((Filas,Columnas))
+   # plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
+   # plt.show()
 
-   Imagen=Dataset.reshape((Filas,Columnas))
-   plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
-   plt.show()
+   # Imagen=Dataset[0].reshape((Filas,Columnas))
+   # plt.imshow(Imagen.astype('uint8'),cmap='gray',vmin=0, vmax=255)
+   # plt.show()
+
+   rostro = cv2.imread('Rostros{}/rostro_5_{}.jpg'.format(prediccion,prediccion))
+   rostro = cv2.resize(rostro, (400,400))
+   
+   cv2.rectangle(rostro,(100,5),(300,25),(255,255,255),-1)
+   cv2.putText(rostro,'Bienvenido',(140,20), 2, 0.5,(0,0,0),1,cv2.LINE_AA)
+   cv2.imshow('Autenticado',rostro)
+   cv2.waitKey(2000)
+   cv2.destroyAllWindows()
+   
 
 def obtener_nombre(carnet):
    datos = leer_datos()
